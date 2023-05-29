@@ -6,5 +6,4 @@ Feel free to download the HTML file or use the [GitHub web preview](https://html
 If the GitHub HTML previewer is providing limitations, below is the link to the same application, but hosted using JSbin:
 https://output.jsbin.com/lohawuv
 
-**Jupyter Code**
-The Jupyter notebook contains the source code that was used to create the final feature layer containing the predicted forest fire causes from 2022 - 2102.
+**Jupyter Code:** The Jupyter notebook contains the source code that was used to create the final feature layer containing the predicted forest fire causes from 2022 - 2102.
