@@ -10,4 +10,5 @@ https://output.jsbin.com/lohawuv
 
 **Dataset Source**<br/>
 The source dataset used to produce the predictions is from the Canadian Wildland Fire Information System (CWFIS) Fire History Data found [here]("https://cwfis.cfs.nrcan.gc.ca/datamart").
+
 The main feature layer powering this web application can be found [here]("https://services1.arcgis.com/0MSEUqKaxRlEPj5g/ArcGIS/rest/services/Forest_Fire_Prediction_in_Canada_8_Years/FeatureServer").
