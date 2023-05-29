@@ -125,10 +125,8 @@ University: Johns Hopkins University
                 });
                 view.ui.add(legend, 'bottom-left');
                 let $toggleLegend = $('#legend').append($('<button id="toggleLegend">Hide Legend</button>')).children(':button');
-                console.log($toggleLegend.children(':button'));
 
                 new Search({view: view, container: $('#searchBar')[0]});
-                //view.ui.add(search, {position: 'top-left', index: 0});
 
                 const homeButton = new Home({view: view});
                 view.ui.add(homeButton, 'top-left');
@@ -157,10 +155,9 @@ University: Johns Hopkins University
                     layer: forestFireLayer,
                     field: 'fire_cause_text'
                 }).then(function (values){
-                    console.log(values);
+                    // first create the widget elements
                     const $queryWidget = $('<div id="queryWidget" class="query-widget-component"><div><b>Query by Cause of Fire</b></div></div>');
                     values.uniqueValueInfos.reverse().forEach((val) => {
-                        console.log(val.value);
                         let option = $(`<div><span><input id="${val.value}" type="checkbox">${val.value}</span></div>`);
                         $($queryWidget).append(option);
                     });
@@ -168,6 +165,7 @@ University: Johns Hopkins University
                     $queryWidget.appendTo(parentDiv);
                     parentDiv.appendTo($('body'));
 
+                    // establish event listener to execute queries
                     const $inputCheckboxes = $('input:checkbox');
                     $inputCheckboxes.click(async () => {
                         $inputCheckboxes.attr('disabled', true);
@@ -177,26 +175,23 @@ University: Johns Hopkins University
                             view.whenLayerView(forestFireLayer).then((layerResult) => {
                                 const waitUntilQueryComplete = async () => {
                                     await reactiveUtils.whenOnce(() => !layerResult.updating);
-                                    console.log('Re-enabling checkbox');
                                     $inputCheckboxes.attr('disabled', false);
                                 }
                                 waitUntilQueryComplete();
                             });
                         }
-                        console.log(checkedOptions);
                         if (checkedOptions.length === 0) {
                             executeQuery('');
                         } else {
                             let expression = '';
                             checkedOptions.each((idx, obj) => {
-                                console.log(obj);
                                 expression = expression + `fire_cause_text = '${obj.id}' OR `
                             });
-                            console.log(expression.slice(0, -4));
                             executeQuery(expression.slice(0, -4));
                         }
                     });
 
+                    // hide/show query widget
                     $(parentDiv).children(':button').click((btn) => {
                         let button = btn.currentTarget;
                         if (button.innerText === 'Hide Query Widget'){
