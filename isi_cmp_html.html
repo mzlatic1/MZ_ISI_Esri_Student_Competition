@@ -75,6 +75,7 @@ University: Johns Hopkins University
 
         #parentQueryWidget{
             position: absolute;
+            width: auto;
             bottom: 30px;
             right: 20px;
         }
@@ -162,6 +163,7 @@ University: Johns Hopkins University
                         let option = $(`<div><span><input id="${val.value}" type="checkbox">${val.value}</span></div>`);
                         $($queryWidget).append(option);
                     });
+                    $('<div style="display: inline-flex"># of Features: <div id="queryResults" style="margin-left: 5px; font-weight: bold">344677</div></div>').appendTo($queryWidget);
                     const parentDiv = $('<div id="parentQueryWidget"><button id="toggleQueryWidget" class="query-widget-component">Hide Query Widget</button></div>');
                     $queryWidget.appendTo(parentDiv);
                     parentDiv.appendTo($('body'));
@@ -177,6 +179,9 @@ University: Johns Hopkins University
                                 const waitUntilQueryComplete = async () => {
                                     await reactiveUtils.whenOnce(() => !layerResult.updating);
                                     $inputCheckboxes.attr('disabled', false);
+                                    forestFireLayer.queryFeatureCount({where: sqlExp}).then((num) =>{
+                                        $('#queryResults').html(num);
+                                    });
                                 }
                                 waitUntilQueryComplete();
                             });
