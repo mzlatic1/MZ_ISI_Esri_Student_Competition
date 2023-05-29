@@ -9,6 +9,6 @@ https://output.jsbin.com/lohawuv
 **Jupyter Code:**<br/>The Jupyter notebook contains the source code that was used to create the final feature layer containing the predicted forest fire causes from 2022 - 2102.
 
 **Dataset Source:**<br/>
-The source dataset used to produce the predictions is from the Canadian Wildland Fire Information System (CWFIS) [Fire History Data]("https://cwfis.cfs.nrcan.gc.ca/datamart").
+The source dataset used to produce the predictions is from the Canadian Wildland Fire Information System (CWFIS) [Fire History Data](https://cwfis.cfs.nrcan.gc.ca/datamart).
 
-The main feature layer powering this web application can be found [here]("https://services1.arcgis.com/0MSEUqKaxRlEPj5g/ArcGIS/rest/services/Forest_Fire_Prediction_in_Canada_8_Years/FeatureServer").
+The main feature layer powering this web application can be found [here](https://services1.arcgis.com/0MSEUqKaxRlEPj5g/ArcGIS/rest/services/Forest_Fire_Prediction_in_Canada_8_Years/FeatureServer).
