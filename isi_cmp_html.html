@@ -3,37 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <title>ISI Student Competition</title>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
     <link rel="stylesheet" href="https://js.arcgis.com/4.24/esri/themes/light/main.css"/>
     <style>
         html,
-        body,
-        #viewDiv {
+        body{
             padding: 0;
             margin: 0;
             height: 100%;
             width: 100%;
         }
+        #viewDiv {
+            position: absolute;
+            height: 95%;
+            width: 100%;
+            bottom: 0;
+        }
 
-        #queryWidget{
+        header {
+            height: 5%;
+            width: 100%;
+            background-color: darkred;
+        }
+
+        .header-item {
+            position: absolute;
+            top: 10px;
+        }
+
+        #searchBar {
+            left: 15px;
+            top: 5px;
+        }
+
+        #headerTitle {
+            left: 50%;
+            top: 20px;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: large;
+            font-weight: bold;
+        }
+
+        #basemapButton {
+            right: 150px;
+        }
+
+        #infoButton {
+            right: 50px;
+        }
+
+        #toggleLegend {
+            border-radius: 20%;
+            outline: 1px solid white;
+            text-align: center;
+            width: 20%;
+            height: 40px
+        }
+
+        .esri-legend__service {
+            background-color: white;
+        }
+
+        #parentQueryWidget{
             position: absolute;
             bottom: 30px;
             right: 20px;
+        }
+
+        .query-widget-component{
+            outline: 3px solid white;
+            border-radius: 4px;
+        }
+
+        #queryWidget{
             background-color: aliceblue;
-            outline: 4px solid black;
-            border-radius: 5px;
+            margin-top: 5px;
         }
 
     </style>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" type="text/javascript"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js" type="text/javascript"></script>
     <script src="https://js.arcgis.com/4.24/"></script>
     <script>
-        require(["esri/Map", "esri/views/MapView", "esri/layers/FeatureLayer", "esri/widgets/Legend", "esri/widgets/Search", "esri/widgets/Home", "esri/smartMapping/statistics/uniqueValues"],
-            (Map, MapView, FeatureLayer, Legend, Search, Home, uniqueValues) =>{
+        require(["esri/Map", "esri/views/MapView", "esri/layers/FeatureLayer", "esri/widgets/Legend",
+                "esri/widgets/Search", "esri/widgets/Home", "esri/smartMapping/statistics/uniqueValues",
+                "esri/widgets/BasemapGallery", "esri/core/reactiveUtils"],
+            (Map, MapView, FeatureLayer, Legend, Search, Home, uniqueValues, BasemapGallery, reactiveUtils) =>{
             $(function(){
                 // load in data
                 const map = new Map({
-                    basemap: 'gray-vector'
+                    basemap: 'dark-gray-vector'
                 });
                 const view = new MapView({
                     map: map,
@@ -43,18 +104,45 @@
                 });
 
                 const forestFireLayer = new FeatureLayer({
-                    url: 'https://services1.arcgis.com/0MSEUqKaxRlEPj5g/arcgis/rest/services/Forest_Fire_Prediction_in_Canada_8_Years/FeatureServer/0'
+                    url: 'https://services1.arcgis.com/0MSEUqKaxRlEPj5g/arcgis/rest/services/Forest_Fire_Prediction_in_Canada_8_Years/FeatureServer/0',
+                    title: 'Forest Fire Predictions (2022 - 2102)'
                 });
                 map.add(forestFireLayer);
 
-                let legend = new Legend({view: view});
+                // add widgets for map
+                let legend = new Legend({
+                    view: view,
+                    container: $('<div id="legend" style="background-color: transparent"></div>')[0],
+                    label: 'test'
+                });
                 view.ui.add(legend, 'bottom-left');
+                let $toggleLegend = $('#legend').append($('<button id="toggleLegend">Hide Legend</button>')).children(':button');
+                console.log($toggleLegend.children(':button'));
 
-                const search = new Search({view: view});
-                view.ui.add(search, {position: 'top-left', index: 0});
+                new Search({view: view, container: $('#searchBar')[0]});
+                //view.ui.add(search, {position: 'top-left', index: 0});
 
                 const homeButton = new Home({view: view});
                 view.ui.add(homeButton, 'top-left');
+
+                let basemaps = new BasemapGallery({view: view, visible: false});
+                view.ui.add(basemaps, 'top-right');
+
+                // set up visibility toggle for widgets
+                $('#basemapButton').click(() =>{
+                    basemaps.visible = !basemaps.visible;
+                });
+                $toggleLegend.click((btn) => {
+                    let button = btn.currentTarget;
+                    const $legendWidget = $('.esri-legend__service');
+                    if (button.innerText === 'Hide Legend'){
+                        $(button).html('Show Legend');
+                        $legendWidget.hide();
+                    } else {
+                        $(button).html('Hide Legend');
+                        $legendWidget.show();
+                    }
+                });
 
                 // set up query widget
                 uniqueValues({
@@ -62,27 +150,67 @@
                     field: 'fire_cause_text'
                 }).then(function (values){
                     console.log(values);
-                    const queryWidget = $('<div id="queryWidget"><div>Query by Cause of Fire</div></div>');
+                    const $queryWidget = $('<div id="queryWidget" class="query-widget-component"><div><b>Query by Cause of Fire</b></div></div>');
                     values.uniqueValueInfos.reverse().forEach((val) => {
                         console.log(val.value);
                         let option = $(`<div><span><input id="${val.value}" type="checkbox">${val.value}</span></div>`);
-                        $(queryWidget).append(option);
+                        $($queryWidget).append(option);
                     });
-                    queryWidget.appendTo($('body'));
+                    const parentDiv = $('<div id="parentQueryWidget"><button id="toggleQueryWidget" class="query-widget-component">Hide Query Widget</button></div>');
+                    $queryWidget.appendTo(parentDiv);
+                    parentDiv.appendTo($('body'));
 
-                    $('input:checkbox').click(() =>{
+                    const $inputCheckboxes = $('input:checkbox');
+                    $inputCheckboxes.click(async () => {
+                        $inputCheckboxes.attr('disabled', true);
                         let checkedOptions = $('input:checkbox:checked');
+                        function executeQuery(sqlExp){
+                            forestFireLayer.definitionExpression = sqlExp;
+                            view.whenLayerView(forestFireLayer).then((layerResult) => {
+                                const waitUntilQueryComplete = async () => {
+                                    await reactiveUtils.whenOnce(() => !layerResult.updating);
+                                    console.log('Re-enabling checkbox');
+                                    $inputCheckboxes.attr('disabled', false);
+                                }
+                                waitUntilQueryComplete();
+                            });
+                        }
                         console.log(checkedOptions);
-                        if (checkedOptions.length === 0){
-                            forestFireLayer.definitionExpression = '';
+                        if (checkedOptions.length === 0) {
+                            executeQuery('');
                         } else {
                             let expression = '';
-                            checkedOptions.each((idx, obj) =>{
+                            checkedOptions.each((idx, obj) => {
                                 console.log(obj);
                                 expression = expression + `fire_cause_text = '${obj.id}' OR `
                             });
                             console.log(expression.slice(0, -4));
-                            forestFireLayer.definitionExpression = expression.slice(0, -4);
+                            executeQuery(expression.slice(0, -4));
+                        }
+                    });
+
+                    $(parentDiv).children(':button').click((btn) => {
+                        let button = btn.currentTarget;
+                        if (button.innerText === 'Hide Query Widget'){
+                            $queryWidget.hide();
+                            $(button).html('Show Query Widget');
+                        } else {
+                            $queryWidget.show();
+                            $(button).html('Hide Query Widget');
+                        }
+                    });
+                });
+
+                // set up info splash screen when info button clicked
+                $('#infoButton').click(() =>{
+                    $('#infoText').dialog({
+                        height: 'auto',
+                        width: 550,
+                        modal: true,
+                        buttons:{
+                            Close: function (){
+                                $(this).dialog('close');
+                            }
                         }
                     });
                 });
@@ -91,7 +219,14 @@
         }); // end of arcgis js sdk
     </script>
 </head>
+<header>
+    <div id="searchBar" class="header-item"></div>
+    <div id="headerTitle" class="header-item">ISI/Esri Student Competition: Forest Fire Predictions in Canada</div>
+    <button class="header-item" id="basemapButton">Basemaps</button>
+    <button class="header-item" id="infoButton">WebApp Info</button>
+</header>
 <body>
     <div id="viewDiv"></div>
+    <div id="infoText" style="display: none" title="WebApplication Information"><b>This web application was created to uphold requirements for the ISI/Esri Student Competition 2023.</b><br><br>The intention for this web application is to visualize results derived from the forest fire causes predictions for Canada from 2022 - 2102. The bottom right of this web application contains a custom query widget that will allow users to query for specific cause of fire(s) to better isolate which cause of fire(s) is of interest for analysis.<br><br>The source dataset used to produce the predictions is from the Canadian Wildland Fire Information System (CWFIS) Fire History Data found <a href="https://cwfis.cfs.nrcan.gc.ca/datamart" target="_blank">here</a>.<br><br>The main feature layer powering this web application can be found <a href="https://services1.arcgis.com/0MSEUqKaxRlEPj5g/ArcGIS/rest/services/Forest_Fire_Prediction_in_Canada_8_Years/FeatureServer" target="_blank">here</a>.</div>
 </body>
 </html>
