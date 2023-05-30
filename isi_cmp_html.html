@@ -166,7 +166,7 @@ University: Johns Hopkins University
                     $('<div style="display: inline-flex"># of Features: <div id="queryResults" style="margin-left: 5px; font-weight: bold">344677</div></div>').appendTo($queryWidget);
                     const parentDiv = $('<div id="parentQueryWidget"><button id="toggleQueryWidget" class="query-widget-component">Hide Query Widget</button></div>');
                     $queryWidget.appendTo(parentDiv);
-                    parentDiv.appendTo($('body'));
+                    parentDiv.appendTo($('main'));
 
                     // establish event listener to execute queries
                     const $inputCheckboxes = $('input:checkbox');
