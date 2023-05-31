@@ -2,6 +2,8 @@
 
 ### This repo was created to uphold requirements for the ISI/Esri Student Competition
 
+**Click [here](https://storymaps.arcgis.com/stories/91b0d37206f949afafbb18492105cc39) to view the StoryMap**
+
 **Web Application: Found in gh-pages branch**<br/>
 Feel free to download the HTML file or use the [GitHub web preview](https://htmlpreview.github.io/?https://github.com/mzlatic1/MZ_ISI_Esri_Student_Competition/blob/gh-pages/isi_cmp_html.html).
 
